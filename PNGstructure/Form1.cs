@@ -23,6 +23,16 @@ namespace PNGstructure
             try
             {
                 textBox2.Text = "";
+
+                // read hex data
+                BinaryReader reader = new BinaryReader(new FileStream("C:\\Users\\dgbao\\Pictures\\what.png", FileMode.Open, FileAccess.Read, FileShare.None));
+                reader.BaseStream.Position = 0x0;     // The offset we reading the data from
+                byte[] fileData = new byte[reader.BaseStream.Length]; // bind reader to byte arry so we can extract data length
+                byte[] data = reader.ReadBytes(fileData.Length); // Read data
+                reader.Close();
+
+                string data_as_str = Encoding.Default.GetString(data); 
+                string data_as_hex = BitConverter.ToString(data);
                 
             }
             catch (Exception exc)
