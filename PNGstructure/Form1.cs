@@ -24,6 +24,8 @@ namespace PNGstructure
             {
                 textBox2.Text = "";
 
+                string info = "";
+
                 // read hex data
                 BinaryReader reader = new BinaryReader(new FileStream("C:\\Users\\dgbao\\Pictures\\what.png", FileMode.Open, FileAccess.Read, FileShare.None));
                 reader.BaseStream.Position = 0x0;     // The offset we reading the data from
@@ -33,6 +35,18 @@ namespace PNGstructure
 
                 string data_as_str = Encoding.Default.GetString(data); 
                 string data_as_hex = BitConverter.ToString(data);
+
+                string file_type = data_as_hex.Substring(0, 23);
+
+                // read PNG file signature
+                if (file_type == "89-50-4E-47-0D-0A-1A-0A")
+                {
+                    info += "File type: PNG\n";
+                }
+                else
+                {
+                    info += "File type: not recognize";
+                }
                 
             }
             catch (Exception exc)
