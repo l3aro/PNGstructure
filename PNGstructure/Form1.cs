@@ -37,17 +37,70 @@ namespace PNGstructure
                 string data_as_hex = BitConverter.ToString(data);
 
                 string file_type = data_as_hex.Substring(0, 23);
+                var continue_check = true;
 
                 // read PNG file signature
                 if (file_type == "89-50-4E-47-0D-0A-1A-0A")
                 {
-                    info += "File type: PNG\n";
+                    info += "File type: PNG" + Environment.NewLine;
                 }
                 else
                 {
                     info += "File type: not recognize";
+                    continue_check = false;
                 }
-                
+
+                if (continue_check)
+                {
+                    // read IHDR
+                    info += "PNG image header: ";
+                    string holder = data_as_hex.Substring(54, 5); // get 4 bytes that describe width 
+                    holder = holder.Remove(2, 1); // remove "-" character
+                    info += int.Parse(holder, System.Globalization.NumberStyles.HexNumber) + "x";
+
+                    holder = data_as_hex.Substring(66, 5); // get 4 bytes that describe height 
+                    holder = holder.Remove(2, 1); // remove "-" character
+                    info += int.Parse(holder, System.Globalization.NumberStyles.HexNumber) + ", ";
+
+                    holder = data_as_hex.Substring(72, 2); // get byte that describe bit depth
+                    info += int.Parse(holder, System.Globalization.NumberStyles.HexNumber) + " bits/sample, ";
+
+                    holder = data_as_hex.Substring(75, 2); // get byte that describe color type
+                    switch (int.Parse(holder, System.Globalization.NumberStyles.HexNumber))
+                    {
+                        case 0:
+                            info += "grayscale";
+                            break;
+                        case 2:
+                            info += "truecolor";
+                            break;
+                        case 3:
+                            info += "paletted";
+                            break;
+                        case 4:
+                            info += "grayscale+alpha";
+                            break;
+                        case 6:
+                            info += "truecolor+alpha";
+                            break;
+                        default:
+                            info += "illegal color type";
+                            break;
+                    }
+
+                    holder = data_as_hex.Substring(84, 2); // get byte that describe interlace method
+                    if (int.Parse(holder, System.Globalization.NumberStyles.HexNumber) == 0)
+                        info += ", noninterlaced" + Environment.NewLine;
+                    else if (int.Parse(holder, System.Globalization.NumberStyles.HexNumber) == 1)
+                        info += ", interlaced" + Environment.NewLine;
+                    else
+                        info += ", unrecognized interlace method" + Environment.NewLine;
+
+
+                }
+
+                textBox2.Text = info;
+
             }
             catch (Exception exc)
             {
